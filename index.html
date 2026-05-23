@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silvia Catherine</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Fraunces:ital,wght@0,300;0,700;1,300;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #e8e0f0;
+    --paper: #0d0a14;
+    --accent1: #b56bff;
+    --accent2: #7c3aed;
+    --accent3: #e040fb;
+    --accent4: #9f7aea;
+    --muted: #7a6880;
+    --border: #2a1f3d;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--paper); color: var(--ink); font-family: 'DM Mono', monospace; overflow-x: hidden; cursor: crosshair; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(13,10,20,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent1); }
+
+  /* HERO */
+  #hero { min-height: 100vh; position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+  #globeCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  /* Gradient fade so canvas bleeds into page bg */
+  #hero::after {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      rgba(13,10,20,0.95) 0%,
+      rgba(13,10,20,0.72) 38%,
+      rgba(13,10,20,0.15) 65%,
+      rgba(13,10,20,0) 100%
+    ),
+    linear-gradient(to bottom, rgba(13,10,20,0) 60%, rgba(13,10,20,0.98) 100%);
+  }
+  .hero-left { display: flex; flex-direction: column; justify-content: flex-end; padding: 8rem 3rem 5rem; position: relative; z-index: 2; max-width: 55%; }
+  .hero-tag { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+  .hero-tag::before { content: ''; display: inline-block; width: 2rem; height: 1px; background: var(--muted); }
+  h1 { font-family: 'Fraunces', serif; font-size: clamp(4rem, 9vw, 8rem); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; }
+  h1 .line1 { display: block; color: var(--ink); }
+  h1 .line2 { display: block; font-style: italic; color: var(--accent1); }
+  .hero-desc { margin-top: 2.5rem; font-size: 0.8rem; line-height: 1.9; color: var(--muted); max-width: 36ch; }
+  .hero-cta { margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn { font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 1rem 2rem; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; transition: all 0.25s; display: inline-block; }
+  .btn:hover { background: #080510; color: var(--ink); border-top: 1px solid #2a1f3d; }
+  .btn.filled { background: var(--accent1); border-color: var(--accent1); color: white; }
+  .btn.filled:hover { background: var(--ink); border-color: var(--ink); }
+
+  /* Floating chips */
+  .data-chip { position: absolute; z-index: 3; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--ink); border: 1px solid var(--border); padding: 0.3rem 0.7rem; font-family: 'DM Mono', monospace; background: rgba(13,10,20,0.65); backdrop-filter: blur(6px); animation: float 4s ease-in-out infinite; }
+  .data-chip:nth-child(1) { top: 18%; right: 22%; animation-delay: 0s; border-color: var(--accent1); color: var(--accent1); }
+  .data-chip:nth-child(2) { top: 32%; right: 8%; animation-delay: 0.8s; border-color: var(--accent2); color: var(--accent2); }
+  .data-chip:nth-child(3) { bottom: 32%; right: 18%; animation-delay: 1.6s; border-color: var(--accent3); color: var(--accent3); }
+  .data-chip:nth-child(4) { bottom: 18%; right: 6%; animation-delay: 2.4s; border-color: var(--accent4); color: var(--accent4); }
+  .data-chip:nth-child(5) { top: 55%; right: 30%; animation-delay: 3.2s; color: var(--muted); }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  .hero-scroll-hint { position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%); font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 0.8rem; z-index: 10; }
+  .scroll-line { width: 1px; height: 3rem; background: var(--muted); animation: scroll-line 2s ease-in-out infinite; }
+  @keyframes scroll-line { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+  /* TICKER */
+  .ticker-wrap { background: var(--accent1); overflow: hidden; padding: 0.7rem 0; white-space: nowrap; }
+  .ticker-inner { display: inline-block; animation: ticker 22s linear infinite; }
+  .ticker-inner span { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: white; margin: 0 2rem; }
+  .ticker-inner .dot { color: rgba(255,255,255,0.5); margin: 0; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTIONS */
+  section { padding: 8rem 3rem; }
+  .section-label { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--accent1); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+  .section-label::after { content: ''; flex: 1; max-width: 4rem; height: 1px; background: var(--accent1); }
+  h2 { font-family: 'Fraunces', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+
+  /* ABOUT */
+  #about { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; border-top: 1px solid var(--border); }
+  .about-text { font-size: 0.95rem; line-height: 1.95; color: var(--ink); margin-top: 2rem; font-weight: 300; }
+  .about-text em-red { color: var(--accent1); font-style: normal; font-weight: 400; }
+  .about-text .aside { display: block; margin-top: 1.2rem; font-size: 0.72rem; color: var(--muted); font-style: italic; padding-left: 1rem; border-left: 2px solid var(--border); line-height: 1.9; }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2.5rem; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 700; line-height: 1; color: var(--ink); }
+  .stat-num span { color: var(--accent1); }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+  .dual-badge { display: inline-flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 2rem; }
+  .badge { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.4rem 1rem; border: 1px solid; }
+  .badge.data { border-color: var(--accent2); color: var(--accent2); }
+  .badge.ir { border-color: var(--accent1); color: var(--accent1); }
+
+  /* EDUCATION */
+  #education { border-top: 1px solid var(--border); }
+  .edu-grid { display: flex; flex-direction: column; gap: 0; margin-top: 4rem; }
+  .edu-item { display: grid; grid-template-columns: 10rem 1fr; gap: 3rem; align-items: start; padding: 2.2rem 0; border-top: 1px solid var(--border); transition: padding-left 0.25s; }
+  .edu-item:last-child { border-bottom: 1px solid var(--border); }
+  .edu-item:hover { padding-left: 0.6rem; }
+  .edu-years { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); padding-top: 0.35rem; white-space: nowrap; }
+  .edu-body {}
+  .edu-school { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; }
+  .edu-degree { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+  .edu-badge { display: inline-block; margin-top: 0.7rem; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.25rem 0.7rem; border: 1px solid var(--border); color: var(--muted); }
+
+  /* SKILLS — light cards */
+  #skills { border-top: 1px solid var(--border); }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 4rem; }
+  .skill-card { background: #130f1f; border: 1px solid var(--border); padding: 2rem 1.8rem; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; }
+  .skill-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(181,107,255,0.15); }
+  .skill-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+  .skill-card.c1::after { background: var(--accent1); }
+  .skill-card.c2::after { background: var(--accent2); }
+  .skill-card.c3::after { background: var(--accent3); }
+  .skill-card.c4::after { background: var(--accent4); }
+  .skill-card.c5::after { background: #c084fc; }
+  .skill-card.c6::after { background: var(--accent2); }
+  .skill-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+  .skill-title { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); margin-bottom: 1rem; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .skill-tag { font-size: 0.58rem; padding: 0.2rem 0.55rem; background: rgba(181,107,255,0.07); color: var(--muted); border: 1px solid var(--border); letter-spacing: 0.08em; }
+  .skill-bar-wrap { margin-top: 1.5rem; height: 2px; background: var(--border); overflow: hidden; }
+  .skill-bar { height: 100%; transition: width 1s ease; }
+
+  /* WORK */
+  #work { border-top: 1px solid var(--border); }
+  .work-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; }
+  .how-to-add { background: #fffbf0; border: 1px dashed var(--accent3); padding: 1.2rem 1.5rem; font-size: 0.7rem; line-height: 1.8; color: var(--muted); margin-bottom: 3rem; display: flex; gap: 1rem; align-items: flex-start; }
+  .how-to-add .icon { font-size: 1.2rem; flex-shrink: 0; }
+  .how-to-add code { background: rgba(0,0,0,0.06); padding: 0.1rem 0.4rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--ink); }
+  .projects-list { display: flex; flex-direction: column; }
+  .project-item { display: grid; grid-template-columns: 4rem 1fr auto; gap: 2rem; align-items: start; padding: 2.5rem 0; border-top: 1px solid var(--border); cursor: pointer; transition: padding-left 0.25s; }
+  .project-item:last-child { border-bottom: 1px solid var(--border); }
+  .project-item:hover { padding-left: 0.8rem; }
+  .project-item:hover .project-num { color: var(--accent1); }
+  .project-item:hover .project-arrow { transform: translate(4px, -4px); color: var(--accent1); }
+  .project-num { font-family: 'Fraunces', serif; font-size: 1.1rem; font-style: italic; color: var(--muted); transition: color 0.25s; padding-top: 0.25rem; }
+  .project-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 0.6rem; }
+  .project-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.7; max-width: 55ch; }
+  .project-tags { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .project-tag { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.6rem; border: 1px solid var(--border); color: var(--muted); }
+  .project-github { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink); text-decoration: none; margin-top: 0.8rem; padding: 0.35rem 0.8rem; border: 1px solid var(--border); transition: all 0.2s; }
+  .project-github:hover { background: #080510; color: var(--ink); border-top: 1px solid #2a1f3d; border-color: var(--ink); }
+  .project-arrow { font-size: 1.5rem; color: var(--muted); transition: all 0.25s; padding-top: 0.25rem; }
+
+  /* BLOG */
+  #blog { border-top: 1px solid var(--border); }
+  .blog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+  .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .blog-card { background: #130f1f; border: 1px solid var(--border); padding: 2.2rem 2rem; transition: transform 0.25s, box-shadow 0.25s; text-decoration: none; display: block; }
+  .blog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(181,107,255,0.15); }
+  .blog-platform { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: white; background: #7c3aed; padding: 0.2rem 0.6rem; margin-bottom: 1.2rem; }
+  .blog-date { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+  .blog-title { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; line-height: 1.25; color: var(--ink); margin-bottom: 1rem; }
+  .blog-excerpt { font-size: 0.72rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; }
+  .blog-read { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent2); display: flex; align-items: center; gap: 0.5rem; }
+  .blog-read::after { content: '→'; }
+
+  /* CONTACT */
+  #contact { border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+  .contact-left h2 .italic { font-style: italic; color: var(--accent1); }
+  .contact-left p { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); line-height: 1.9; max-width: 38ch; }
+  .contact-links { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .contact-link { font-size: 0.75rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; transition: color 0.2s; }
+  .contact-link:hover { color: var(--accent1); }
+  .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-field label { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+  .form-field input, .form-field textarea { background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 0.8rem 0; font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--ink); outline: none; transition: border-color 0.25s; resize: none; }
+  .form-field input:focus, .form-field textarea:focus { border-color: var(--accent1); }
+  .form-field textarea { min-height: 100px; }
+
+  /* FOOTER */
+  footer { background: #080510; color: var(--ink); border-top: 1px solid #2a1f3d; padding: 3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-name { font-family: 'Fraunces', serif; font-size: 1.2rem; font-style: italic; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(181,107,255,0.45); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent1); }
+  .footer-copy { font-size: 0.6rem; color: rgba(181,107,255,0.25); letter-spacing: 0.1em; }
+
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="nav-logo">SC</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Data Science · International Relations</div>
+    <h1>
+      <span class="line1">Silvia</span>
+      <span class="line2">Catherine</span>
+    </h1>
+    <p class="hero-desc">
+      trying to make sense of people, systems, and the world around us — while building for what comes next.
+    </p>
+    <div class="hero-cta">
+      <a href="#work" class="btn filled">View My Work</a>
+      <a href="#contact" class="btn">Let's Connect</a>
+    </div>
+  </div>
+
+  <canvas id="globeCanvas"></canvas>
+  <div class="data-chip">r² = 0.94</div>
+  <div class="data-chip">n = 1,847</div>
+  <div class="data-chip">geopolitics</div>
+  <div class="data-chip">p &lt; 0.001</div>
+  <div class="data-chip">UN data</div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span>Data Science</span><span class="dot">·</span><span>International Relations</span><span class="dot">·</span><span>Policy Analysis</span><span class="dot">·</span><span>Machine Learning</span><span class="dot">·</span><span>Geopolitics</span><span class="dot">·</span><span>Statistical Modeling</span><span class="dot">·</span><span>Global Affairs</span><span class="dot">·</span><span>Data Visualization</span><span class="dot">·</span><span>Data Science</span><span class="dot">·</span><span>International Relations</span><span class="dot">·</span><span>Policy Analysis</span><span class="dot">·</span><span>Machine Learning</span><span class="dot">·</span><span>Geopolitics</span><span class="dot">·</span><span>Statistical Modeling</span><span class="dot">·</span><span>Global Affairs</span><span class="dot">·</span><span>Data Visualization</span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" class="fade-up">
+  <div>
+    <div class="section-label">01 — About</div>
+    <h2>Where data<br><em style="font-family:'Fraunces',serif;font-style:italic;color:var(--accent1)">meets diplomacy</em></h2>
+    <div class="dual-badge">
+      <span class="badge data">Data Science Major</span>
+      <span class="badge ir">Int'l Relations Minor</span>
+    </div>
+  </div>
+
+  <div>
+    <p class="about-text">
+      Holaa! I'm <em-red>Silvia Catherine</em-red> — someone who has always been curious about how the world works, especially people, the systems around them, technology, ideas, and change.<br><br>
+      That curiosity slowly grew into interests in Data Science, International Relations, design, and emerging technology.<br><br>
+      By day, I'm training regression models. By night, I'm reading geopolitical briefings and calling it "self-care." My actual superpower is translating the chaos of world events into numbers, then making those numbers interesting to people who swore they hated statistics.<br><br>
+      I believe <em-red>data without context is just noise</em-red>, and international relations without evidence is just vibes. Someone has to do both rigorously — might as well be me.<br><br>
+      Alongside that, I love creativity in all its forms — music, storytelling, branding, building ideas, and creating things that feel both thoughtful and real.
+      <span class="aside">I'm still learning, still building, and still figuring things out — but this space holds pieces of that journey.</span>
+    </p>
+
+    <div class="stat-row">
+      <div><div class="stat-num">12<span>+</span></div><div class="stat-label">Innovative Projects</div></div>
+      <div><div class="stat-num">6<span>+</span></div><div class="stat-label">Systems Analyzed</div></div>
+      <div><div class="stat-num">4<span>+</span></div><div class="stat-label">Ideas Tested Experimentally</div></div>
+      <div><div class="stat-num">2</div><div class="stat-label">Disciplines Merged</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="fade-up">
+  <div class="section-label">02 — Education</div>
+  <h2>Academic<br><em style="font-family:'Fraunces',serif;font-style:italic;color:var(--accent2)">Background</em></h2>
+
+  <div class="edu-grid">
+    <div class="edu-item">
+      <div class="edu-years">2010 – 2023</div>
+      <div class="edu-body">
+        <div class="edu-school">St. Philomena's Public School</div>
+        <div class="edu-degree">Schooling Foundation Years</div>
+        <span class="edu-badge">School</span>
+      </div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-years">2023 – 2025</div>
+      <div class="edu-body">
+        <div class="edu-school">Air Force School</div>
+        <div class="edu-degree">Computer Science · Senior Secondary</div>
+        <span class="edu-badge">Senior Secondary</span>
+      </div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-years">2026 – 2030</div>
+      <div class="edu-body">
+        <div class="edu-school">Indian Institute of Technology Madras</div>
+        <div class="edu-degree">BS Data Science and Applications</div>
+        <span class="edu-badge" style="border-color:var(--accent1);color:var(--accent1)">Ongoing</span>
+      </div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-years">2026 – 2029</div>
+      <div class="edu-body">
+        <div class="edu-school">Amity University, Noida</div>
+        <div class="edu-degree">BA International Relations</div>
+        <span class="edu-badge" style="border-color:var(--accent1);color:var(--accent1)">Ongoing</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="fade-up">
+  <div class="section-label">03 — Skills</div>
+  <h2>What I<br>bring to the table</h2>
+  <div class="skills-grid">
+    <div class="skill-card c1">
+      <div class="skill-icon">🖥️</div>
+      <div class="skill-title">Data & Systems</div>
+      <div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">SQL</span><span class="skill-tag">HTML</span><span class="skill-tag">Analytics</span><span class="skill-tag">Modeling</span><span class="skill-tag">Generative AI</span><span class="skill-tag">AI Tools</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%;background:var(--accent1)"></div></div>
+    </div>
+    <div class="skill-card c2">
+      <div class="skill-icon">🌍</div>
+      <div class="skill-title">Global Systems</div>
+      <div class="skill-tags"><span class="skill-tag">Policy</span><span class="skill-tag">Diplomacy</span><span class="skill-tag">Geopolitics</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%;background:var(--accent2)"></div></div>
+    </div>
+    <div class="skill-card c3">
+      <div class="skill-icon">🧪</div>
+      <div class="skill-title">Experimentation</div>
+      <div class="skill-tags"><span class="skill-tag">Projects</span><span class="skill-tag">Research</span><span class="skill-tag">Iteration</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%;background:var(--accent3)"></div></div>
+    </div>
+    <div class="skill-card c4">
+      <div class="skill-icon">📊</div>
+      <div class="skill-title">Analytical Research</div>
+      <div class="skill-tags"><span class="skill-tag">Statistics</span><span class="skill-tag">Insight</span><span class="skill-tag">Strategy</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:83%;background:var(--accent4)"></div></div>
+    </div>
+    <div class="skill-card c5">
+      <div class="skill-icon">🎨</div>
+      <div class="skill-title">Creative Tech</div>
+      <div class="skill-tags"><span class="skill-tag">Visualization</span><span class="skill-tag">Design</span><span class="skill-tag">Communication</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:78%;background:#9c27b0"></div></div>
+    </div>
+    <div class="skill-card c6">
+      <div class="skill-icon">✍️</div>
+      <div class="skill-title">Thoughts & Writing</div>
+      <div class="skill-tags"><span class="skill-tag">Blogs</span><span class="skill-tag">Content Writing</span><span class="skill-tag">Script Writing</span><span class="skill-tag">Essays</span><span class="skill-tag">Policy Briefs</span><span class="skill-tag">Commentary</span></div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:88%;background:var(--accent2)"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work" class="fade-up">
+  <div class="work-header">
+    <div>
+      <div class="section-label">04 — Work</div>
+      <h2>Selected<br>Projects</h2>
+    </div>
+    <a href="https://github.com/silviaacatherine" target="_blank" class="btn">GitHub Profile ↗</a>
+  </div>
+
+  <div class="projects-list">
+    <div class="project-item" style="grid-template-columns:1fr; padding: 3rem 0; cursor:default;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:1.2rem; text-align:center; color:var(--muted);">
+        <div style="font-size:2.5rem;">⌥</div>
+        <div style="font-family:'Syne',sans-serif; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase;">Projects live on GitHub</div>
+        <p style="font-size:0.75rem; max-width:40ch; line-height:1.8;">All my work — code, research, experiments, and everything in between — lives on GitHub. Head there to explore.</p>
+        <a href="https://github.com/silviaacatherine" target="_blank" class="btn filled" style="margin-top:0.5rem">Visit GitHub ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog" class="fade-up">
+  <div class="blog-header">
+    <div>
+      <div class="section-label">05 — Blog</div>
+      <h2>Writing at the<br><em style="font-family:'Fraunces',serif;font-style:italic;color:var(--accent2)">intersection</em></h2>
+    </div>
+    <a href="https://medium.com/@silviacatherine.n" target="_blank" class="btn">All on Medium ↗</a>
+  </div>
+
+  <div class="blog-grid">
+    <a class="blog-card" href="https://medium.com/@silviacatherine.n" target="_blank">
+      <div class="blog-platform">M · Medium</div>
+      <div class="blog-date">Latest · Writing</div>
+      <div class="blog-title">Read my latest on Medium</div>
+      <div class="blog-excerpt">Thoughts on data, global affairs, policy, and everything in between. Follow along for new pieces as they drop.</div>
+      <div class="blog-read">Read on Medium</div>
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="fade-up">
+  <div class="contact-left">
+    <div class="section-label">06 — Contact</div>
+    <h2>Let's make<br>something<br><span class="italic" style="font-style:italic;color:var(--accent1)">meaningful</span></h2>
+    <p>Working on data + policy intersections? Want to collaborate? Or just want to argue about whether IR is a real science? I'm in either way.</p>
+    <div class="contact-links">
+      <a href="mailto:silviacatherine.n@gmail.com" class="contact-link">→ silviacatherine.n@gmail.com</a>
+      <a href="https://www.linkedin.com/in/silvia-catherine-7162531bb" target="_blank" class="contact-link">→ LinkedIn</a>
+      <a href="https://medium.com/@silviacatherine.n" target="_blank" class="contact-link">→ Medium</a>
+      <a href="https://x.com/afkcatherine" target="_blank" class="contact-link">→ X · @afkcatherine</a>
+      <a href="https://github.com/silviaacatherine" target="_blank" class="contact-link">→ GitHub</a>
+    </div>
+  </div>
+
+  <div class="contact-form">
+    <div class="form-row">
+      <div class="form-field"><label>Name</label><input type="text" placeholder="Your name"></div>
+      <div class="form-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+    </div>
+    <div class="form-field"><label>Subject</label><input type="text" placeholder="What's this about?"></div>
+    <div class="form-field"><label>Message</label><textarea placeholder="Tell me about your project or idea..."></textarea></div>
+    <button class="btn filled" type="button" style="margin-top:1rem;align-self:flex-start">Send Message →</button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-name">Silvia Catherine</div>
+  <div class="footer-links">
+    <a href="#about">About</a><a href="#skills">Skills</a><a href="#work">Work</a><a href="#blog">Blog</a><a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 Silvia Catherine. All rights reserved.</div>
+</footer>
+
+<script>
+/* ===================== ANIMATED 3D GLOBE ===================== */
+const canvas = document.getElementById('globeCanvas');
+const ctx = canvas.getContext('2d');
+
+function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const getR = () => Math.min(canvas.width, canvas.height) * 0.36;
+
+const cities = [
+  { name: 'New York',     lat:  40.7, lon:  -74.0, color: '#b56bff' },
+  { name: 'London',       lat:  51.5, lon:   -0.1, color: '#7c3aed' },
+  { name: 'Beijing',      lat:  39.9, lon:  116.4, color: '#e040fb' },
+  { name: 'Geneva',       lat:  46.2, lon:    6.1, color: '#9f7aea' },
+  { name: 'Nairobi',      lat:  -1.3, lon:   36.8, color: '#b56bff' },
+  { name: 'New Delhi',    lat:  28.6, lon:   77.2, color: '#c084fc' },
+  { name: 'Brasilia',     lat: -15.8, lon:  -47.9, color: '#7c3aed' },
+  { name: 'Moscow',       lat:  55.8, lon:   37.6, color: '#e040fb' },
+  { name: 'Tokyo',        lat:  35.7, lon:  139.7, color: '#9f7aea' },
+  { name: 'Cairo',        lat:  30.0, lon:   31.2, color: '#b56bff' },
+  { name: 'Sydney',       lat: -33.9, lon:  151.2, color: '#7c3aed' },
+  { name: 'Buenos Aires', lat: -34.6, lon:  -58.4, color: '#e040fb' },
+];
+
+const arcs = [[0,1],[1,2],[2,8],[0,5],[3,1],[4,5],[6,0],[7,2],[9,3],[10,8],[11,6],[0,3],[5,2],[4,9]];
+
+let rotation = 0;
+let targetRotX = 0.25, targetRotY = 0;
+let rotX = 0.25, rotY = 0;
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  targetRotX =  (e.clientY - (rect.top + rect.height/2)) / rect.height * 0.8;
+  targetRotY = -(e.clientX - (rect.left + rect.width/2))  / rect.width  * 1.2;
+});
+canvas.addEventListener('mouseleave', () => { targetRotX = 0.25; targetRotY = 0; });
+
+function toXYZ(lat, lon, r) {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lon + 180) * Math.PI / 180;
+  return { x: -r * Math.sin(phi) * Math.cos(theta), y: r * Math.cos(phi), z: r * Math.sin(phi) * Math.sin(theta) };
+}
+function rotateY(p, a) { return { x: p.x*Math.cos(a)+p.z*Math.sin(a), y: p.y, z: -p.x*Math.sin(a)+p.z*Math.cos(a) }; }
+function rotateX(p, a) { return { x: p.x, y: p.y*Math.cos(a)-p.z*Math.sin(a), z: p.y*Math.sin(a)+p.z*Math.cos(a) }; }
+function project(p, cx, cy) {
+  const fov = canvas.height * 2.4, z = p.z + fov;
+  return { x: cx + p.x*fov/z, y: cy + p.y*fov/z };
+}
+
+function drawGlobe() {
+  const W = canvas.width, H = canvas.height;
+  const cx = W * 0.68, cy = H / 2; // globe centered on right 2/3
+  const r = Math.min(W * 0.38, H * 0.44);
+  ctx.clearRect(0, 0, W, H);
+
+  // Background — deep purple glow
+  const bg = ctx.createRadialGradient(cx*1.2, cy, r*0.1, cx*1.2, cy, r*1.9);
+  bg.addColorStop(0,   'rgba(80,30,120,0.35)');
+  bg.addColorStop(0.5, 'rgba(40,15,70,0.15)');
+  bg.addColorStop(1,   'rgba(13,10,20,0)');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  rotX += (targetRotX - rotX) * 0.05;
+  rotY += (targetRotY - rotY) * 0.05;
+  rotation += 0.004;
+  const totalY = rotation + rotY;
+
+  // Grid lines
+  for (let i = 0; i < 12; i++) {
+    const lon = (i/12)*360 - 180;
+    ctx.beginPath(); let first = true;
+    for (let la = -88; la <= 88; la += 3) {
+      let p = toXYZ(la, lon, r); p = rotateY(p, totalY); p = rotateX(p, rotX);
+      const pr = project(p, cx, cy);
+      ctx.strokeStyle = p.z > 0 ? 'rgba(181,107,255,0.14)' : 'rgba(181,107,255,0.03)';
+      if (first) { ctx.moveTo(pr.x, pr.y); first = false; } else ctx.lineTo(pr.x, pr.y);
+    }
+    ctx.lineWidth = 0.5; ctx.stroke();
+  }
+  for (let i = 1; i < 9; i++) {
+    const lat = -90 + (i/9)*180;
+    ctx.beginPath(); let first = true;
+    for (let lo = -180; lo <= 180; lo += 3) {
+      let p = toXYZ(lat, lo, r); p = rotateY(p, totalY); p = rotateX(p, rotX);
+      const pr = project(p, cx, cy);
+      ctx.strokeStyle = p.z > 0 ? 'rgba(181,107,255,0.14)' : 'rgba(181,107,255,0.03)';
+      if (first) { ctx.moveTo(pr.x, pr.y); first = false; } else ctx.lineTo(pr.x, pr.y);
+    }
+    ctx.lineWidth = 0.5; ctx.stroke();
+  }
+
+  // Equator accent line
+  ctx.beginPath(); let eFirst = true;
+  for (let lo = -180; lo <= 180; lo += 2) {
+    let p = toXYZ(0, lo, r); p = rotateY(p, totalY); p = rotateX(p, rotX);
+    const pr = project(p, cx, cy);
+    ctx.strokeStyle = p.z > 0 ? 'rgba(181,107,255,0.55)' : 'rgba(181,107,255,0.07)';
+    if (eFirst) { ctx.moveTo(pr.x, pr.y); eFirst = false; } else ctx.lineTo(pr.x, pr.y);
+  }
+  ctx.lineWidth = 1.2; ctx.stroke();
+
+  // Globe sphere — deep purple inner glow
+  const sphereGrad = ctx.createRadialGradient(cx - r*0.25, cy - r*0.25, r*0.05, cx, cy, r);
+  sphereGrad.addColorStop(0, 'rgba(120,50,200,0.04)');
+  sphereGrad.addColorStop(0.7, 'rgba(60,20,100,0.08)');
+  sphereGrad.addColorStop(1, 'rgba(20,5,40,0.28)');
+  ctx.fillStyle = sphereGrad;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+
+  // Projected cities
+  const projected = cities.map(c => {
+    let p = toXYZ(c.lat, c.lon, r); p = rotateY(p, totalY); p = rotateX(p, rotX);
+    const pr = project(p, cx, cy);
+    return { ...c, px: pr.x, py: pr.y, visible: p.z > 0, depth: p.z };
+  });
+
+  // Arcs with animated particles
+  arcs.forEach(([a, b]) => {
+    const pa = projected[a], pb = projected[b];
+    if (!pa.visible || !pb.visible) return;
+
+    const mx = (pa.px + pb.px)/2, my = (pa.py + pb.py)/2;
+    const cpx = mx - (pb.py - pa.py)*0.3, cpy = my + (pb.px - pa.px)*0.3;
+
+    const g = ctx.createLinearGradient(pa.px, pa.py, pb.px, pb.py);
+    g.addColorStop(0,   pa.color + 'cc');
+    g.addColorStop(0.5, pa.color + '55');
+    g.addColorStop(1,   pb.color + 'cc');
+    ctx.beginPath(); ctx.moveTo(pa.px, pa.py);
+    ctx.quadraticCurveTo(cpx, cpy, pb.px, pb.py);
+    ctx.strokeStyle = g; ctx.lineWidth = 1.2; ctx.stroke();
+
+    // Moving particle
+    const t = ((Date.now()/1600 + a*0.3) % 1);
+    const tx = (1-t)*(1-t)*pa.px + 2*(1-t)*t*cpx + t*t*pb.px;
+    const ty = (1-t)*(1-t)*pa.py + 2*(1-t)*t*cpy + t*t*pb.py;
+    const pg = ctx.createRadialGradient(tx, ty, 0, tx, ty, 5);
+    pg.addColorStop(0, '#b56bff');
+    pg.addColorStop(1, 'rgba(181,107,255,0)');
+    ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(tx, ty, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#e8e0f0'; ctx.beginPath(); ctx.arc(tx, ty, 1.8, 0, Math.PI*2); ctx.fill();
+  });
+
+  // City dots with pulse
+  projected.sort((a,b) => a.depth-b.depth).forEach(city => {
+    if (!city.visible) return;
+
+    // Glow halo
+    const glow = ctx.createRadialGradient(city.px, city.py, 0, city.px, city.py, 18);
+    glow.addColorStop(0, city.color + '55'); glow.addColorStop(1, city.color + '00');
+    ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(city.px, city.py, 18, 0, Math.PI*2); ctx.fill();
+
+    // Pulse ring
+    const pulse = ((Date.now()/1000 + cities.indexOf(city)*0.4) % 1);
+    ctx.beginPath(); ctx.arc(city.px, city.py, 4 + pulse*14, 0, Math.PI*2);
+    ctx.strokeStyle = city.color + Math.floor((1-pulse)*180).toString(16).padStart(2,'0');
+    ctx.lineWidth = 1; ctx.stroke();
+
+    // Dot
+    ctx.beginPath(); ctx.arc(city.px, city.py, 4, 0, Math.PI*2);
+    ctx.fillStyle = city.color; ctx.fill();
+    ctx.strokeStyle = 'rgba(232,224,240,0.7)'; ctx.lineWidth = 1.2; ctx.stroke();
+
+    // Label
+    ctx.fillStyle = 'rgba(232,224,240,0.7)';
+    ctx.font = 'bold 8px DM Mono, monospace';
+    ctx.fillText(city.name, city.px + 7, city.py - 3);
+  });
+
+  // Outer atmosphere — purple halo
+  const atmo = ctx.createRadialGradient(cx, cy, r*0.88, cx, cy, r*1.08);
+  atmo.addColorStop(0, 'rgba(181,107,255,0.0)');
+  atmo.addColorStop(0.6, 'rgba(181,107,255,0.12)');
+  atmo.addColorStop(1, 'rgba(181,107,255,0.0)');
+  ctx.fillStyle = atmo; ctx.beginPath(); ctx.arc(cx, cy, r*1.08, 0, Math.PI*2); ctx.fill();
+
+  requestAnimationFrame(drawGlobe);
+}
+drawGlobe();
+
+/* ===================== SCROLL FADE ===================== */
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+/* ===================== SKILL BARS ===================== */
+const bars = document.querySelectorAll('.skill-bar');
+const ws = []; bars.forEach(b => { ws.push(b.style.width); b.style.width='0%'; });
+const sObs = new IntersectionObserver(es => {
+  if (es[0].isIntersecting) { bars.forEach((b,i) => setTimeout(()=>{ b.style.width=ws[i]; }, i*130)); sObs.disconnect(); }
+}, { threshold: 0.3 });
+sObs.observe(document.getElementById('skills'));
+</script>
+</body>
+</html>
