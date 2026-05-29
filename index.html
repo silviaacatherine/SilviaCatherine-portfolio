@@ -183,33 +183,84 @@
   .nav-toggle.open span:nth-child(2) { opacity: 0; }
   .nav-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-  /* Mobile nav drawer */
+  /* ===================== MOBILE NAV DRAWER — fullscreen overlay ===================== */
   .nav-drawer {
-    display: none;
-    position: fixed; top: 0; right: -100%;
-    /* FIX: use min() to cap at 80vw — prevents drawer wider than screen */
-    width: min(280px, 80vw);
-    height: 100vh; height: 100dvh; /* FIX: dynamic viewport height on mobile */
-    background: rgba(13,10,20,0.97); backdrop-filter: blur(20px);
-    border-left: 1px solid var(--border); z-index: 99;
-    flex-direction: column; padding: 5rem 2.5rem 3rem;
-    /* FIX: overflow-y scroll in case content is taller than viewport */
+    display: none; /* shown only inside @media via flex */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* dynamic viewport height for mobile browsers */
+    z-index: 9999;
+    background: rgba(13,10,20,0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
     overflow-y: auto;
-    gap: 0; transition: right 0.35s cubic-bezier(.4,0,.2,1);
+    overflow-x: hidden;
+    /* slide-in from top */
+    transform: translateY(-100%);
+    transition: transform 0.38s cubic-bezier(.4,0,.2,1);
+    /* no border, no right/left offset */
   }
-  .nav-drawer.open { right: 0; }
+  .nav-drawer.open {
+    transform: translateY(0);
+  }
   .nav-drawer a {
-    font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--ink); text-decoration: none;
-    /* FIX: proper touch target height */
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border); display: block;
-    transition: color 0.2s, padding-left 0.2s;
-    min-height: 44px; display: flex; align-items: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 1.1rem 2rem;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    transition: color 0.2s, background 0.2s;
   }
-  .nav-drawer a:hover { color: var(--accent1); padding-left: 0.5rem; }
-  .nav-overlay { display: none; position: fixed; inset: 0; z-index: 98; background: rgba(0,0,0,0.5); }
-  .nav-overlay.open { display: block; }
+  .nav-drawer a:first-child { border-top: 1px solid var(--border); }
+  .nav-drawer a:hover,
+  .nav-drawer a:active { color: var(--accent1); background: rgba(181,107,255,0.06); }
+
+  /* Close (×) button inside the fullscreen drawer */
+  .nav-drawer-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+  .nav-drawer-close:hover { color: var(--accent1); }
+
+  /* Overlay not needed anymore — drawer IS the fullscreen overlay */
+  .nav-overlay { display: none !important; }
+
+  /* Lock body scroll when menu open */
+  body.menu-open {
+    overflow: hidden;
+    /* prevent iOS momentum scroll bleed-through */
+    position: fixed;
+    width: 100%;
+  }
 
   /* ===================== HERO ===================== */
   #hero {
@@ -742,6 +793,7 @@
 <!-- Mobile Nav Overlay -->
 <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
 <nav class="nav-drawer" id="navDrawer">
+  <button class="nav-drawer-close" onclick="closeNav()" aria-label="Close menu">✕</button>
   <a href="#about" onclick="closeNav()">About</a>
   <a href="#education" onclick="closeNav()">Education</a>
   <a href="#skills" onclick="closeNav()">Skills</a>
@@ -1088,18 +1140,28 @@
   const navDrawer  = document.getElementById('navDrawer');
   const navOverlay = document.getElementById('navOverlay');
 
+  let savedScrollY = 0;
+
   navToggle.addEventListener('click', () => {
     const open = navDrawer.classList.toggle('open');
-    navOverlay.classList.toggle('open', open);
     navToggle.classList.toggle('open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      savedScrollY = window.scrollY;
+      document.body.classList.add('menu-open');
+      document.body.style.top = '-' + savedScrollY + 'px';
+    } else {
+      document.body.classList.remove('menu-open');
+      document.body.style.top = '';
+      window.scrollTo(0, savedScrollY);
+    }
   });
 
   function closeNav() {
     navDrawer.classList.remove('open');
-    navOverlay.classList.remove('open');
     navToggle.classList.remove('open');
-    document.body.style.overflow = '';
+    document.body.classList.remove('menu-open');
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollY);
   }
 
 /* ===================== ANIMATED 3D GLOBE ===================== */
